@@ -1,5 +1,5 @@
 <?php
-namespace ClamAv\Driver;
+namespace Avasil\ClamAv\Driver;
 
 /**
  * Interface ClamdDriverInterface

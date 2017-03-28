@@ -1,11 +1,11 @@
 <?php
-namespace ClamAv\Driver;
+namespace Avasil\ClamAv\Driver;
 
-use ClamAv\Traits\GetOptionTrait;
+use Avasil\ClamAv\Traits\GetOptionTrait;
 
 /**
  * Class AbstractDriver
- * @package ClamAv\Driver
+ * @package Avasil\ClamAv\Driver
  */
 abstract class AbstractDriver implements DriverInterface
 {

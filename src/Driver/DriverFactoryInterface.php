@@ -1,9 +1,9 @@
 <?php
-namespace ClamAv\Driver;
+namespace Avasil\ClamAv\Driver;
 
 /**
  * Interface DriverFactoryInterface
- * @package ClamAv\Driver
+ * @package Avasil\ClamAv\Driver
  */
 interface DriverFactoryInterface
 {

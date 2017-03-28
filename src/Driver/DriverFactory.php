@@ -1,11 +1,11 @@
 <?php
-namespace ClamAv\Driver;
+namespace Avasil\ClamAv\Driver;
 
-use ClamAv\Exception\MissingDriverException;
+use Avasil\ClamAv\Exception\MissingDriverException;
 
 /**
  * Class DriverFactory
- * @package ClamAv\Driver
+ * @package Avasil\ClamAv\Driver
  */
 class DriverFactory implements DriverFactoryInterface
 {

@@ -1,0 +1,25 @@
+{
+  "name": "vanagnostos/php-clamav",
+  "description": "A PHP interface to clamd / clamscan.",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Vasil Anagnostos",
+      "email": "vasil.a@me.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Avasil\\ClamAv\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  },
+  "require": {
+    "php": ">=5.6"
+  },
+  "require-dev": {
+  }
+}

@@ -1,9 +1,9 @@
 <?php
-namespace ClamAv\Exception;
+namespace Avasil\ClamAv\Exception;
 
 /**
  * Class MissingDriverException
- * @package ClamAv\Exception
+ * @package Avasil\ClamAv\Exception
  */
 class MissingDriverException extends \Exception
 {

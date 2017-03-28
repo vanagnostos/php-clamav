@@ -1,5 +1,5 @@
 <?php
-namespace ClamAv\Exception;
+namespace Avasil\ClamAv\Exception;
 
 /**
  * Class HostOrSocketRequiredException

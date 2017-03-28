@@ -1,9 +1,9 @@
 <?php
-namespace ClamAv\Exception;
+namespace Avasil\ClamAv\Exception;
 
 /**
  * Class MissingExecutableException
- * @package ClamAv\Exception
+ * @package Avasil\ClamAv\Exception
  */
 class MissingExecutableException extends \Exception
 {

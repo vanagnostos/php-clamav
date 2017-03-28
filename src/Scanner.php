@@ -1,10 +1,10 @@
 <?php
-namespace ClamAv;
+namespace Avasil\ClamAv;
 
-use ClamAv\Driver\DriverFactory;
-use ClamAv\Driver\DriverFactoryInterface;
-use ClamAv\Driver\DriverInterface;
-use ClamAv\Exception\InvalidTargetException;
+use Avasil\ClamAv\Driver\DriverFactory;
+use Avasil\ClamAv\Driver\DriverFactoryInterface;
+use Avasil\ClamAv\Driver\DriverInterface;
+use Avasil\ClamAv\Exception\InvalidTargetException;
 
 class Scanner
 {

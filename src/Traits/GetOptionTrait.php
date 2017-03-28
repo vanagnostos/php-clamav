@@ -1,9 +1,9 @@
 <?php
-namespace ClamAv\Traits;
+namespace Avasil\ClamAv\Traits;
 
 /**
  * Trait GetOptionTrait
- * @package ClamAv\Traits
+ * @package Avasil\ClamAv\Traits
  */
 trait GetOptionTrait
 {
