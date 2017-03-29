@@ -1,10 +1,3 @@
-# php-clamav
-php-clamav is a PHP interface to clamd / clamscan that allows you to scan files and directories using ClamAV.
-
-Examples
-========
-
-```PHP
 <?php
 
 // autoloader
@@ -52,27 +45,3 @@ $clamd->setDriver(
 
 info($clamd);
 scan($clamd, ['../tests/clean.txt', '../tests/infected.txt', '../tests/']);
-```
-
-**This should output something like:**
-
-> Ping: Ok  
-> ClamAv Version: ClamAV 0.99.2/21473/Thu Mar 24 20:25:24 2016  
-> Scanning ../tests/clean.txt:  
-> ../tests/clean.txt is clean  
-> Scanning ../tests/infected.txt:  
-> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
-> Scanning ../tests/:  
-> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
-> ../tests/archive.zip is infected with Eicar-Test-Signature FOUND  
-  
-> Ping: Ok  
-> ClamAv Version: ClamAV 0.99.2/21473/Thu Mar 24 20:25:24 2016  
-> Scanning ../tests/clean.txt:  
-> ../tests/clean.txt is clean  
-> Scanning ../tests/infected.txt:  
-> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
-> Scanning ../tests/:  
-> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
-> ../tests/archive.zip is infected with Eicar-Test-Signature FOUND  
-

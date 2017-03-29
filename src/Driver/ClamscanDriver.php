@@ -13,22 +13,22 @@ class ClamscanDriver extends AbstractDriver
     /**
      * @var string
      */
-    const CLAMSCAN_EXECUTABLE = '/usr/bin/clamscan';
+    const EXECUTABLE = '/usr/bin/clamscan';
 
     /**
      * @var string
      */
-    const CLAMSCAN_COMMAND = '--infected --no-summary --recursive %s';
+    const COMMAND = '--infected --no-summary --recursive %s';
 
     /**
      * @var int
      */
-    const CLAMSCAN_CLEAN = 0;
+    const CLEAN = 0;
 
     /**
      * @var int
      */
-    const CLAMSCAN_INFECTED = 1;
+    const INFECTED = 1;
 
     /**
      * ClamscanDriver constructor.
@@ -103,7 +103,7 @@ class ClamscanDriver extends AbstractDriver
      */
     protected function getExecutable()
     {
-        return $this->getOption('executable', self::CLAMSCAN_EXECUTABLE);
+        return $this->getOption('executable', self::EXECUTABLE);
     }
 
     /**
@@ -111,7 +111,7 @@ class ClamscanDriver extends AbstractDriver
      */
     protected function getCommand()
     {
-        return $this->getOption('command', self::CLAMSCAN_COMMAND);
+        return $this->getOption('command', self::COMMAND);
     }
 
     /**
@@ -119,7 +119,7 @@ class ClamscanDriver extends AbstractDriver
      */
     protected function getInfected()
     {
-        return $this->getOption('infected', self::CLAMSCAN_INFECTED);
+        return $this->getOption('infected', self::INFECTED);
     }
 
     /**
@@ -127,6 +127,6 @@ class ClamscanDriver extends AbstractDriver
      */
     protected function getClean()
     {
-        return $this->getOption('clean', self::CLAMSCAN_CLEAN);
+        return $this->getOption('clean', self::CLEAN);
     }
 }
