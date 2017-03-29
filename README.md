@@ -44,10 +44,10 @@ $clamd->setDriver(
 // Or create new one
 //$clamd = new \Avasil\ClamAv\Scanner([
 //    'driver' => 'clamd_local',
-//    'host' => '127.0.0.1',
-//    // port or socket is required
-//    'port' => 3310,
 //    //'socket' => '/usr/local/var/run/clamav/clamd.sock'
+//    // or
+//    'host' => '127.0.0.1',
+//    'port' => 3310,
 //]);
 
 info($clamd);
