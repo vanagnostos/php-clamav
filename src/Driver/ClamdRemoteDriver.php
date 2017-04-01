@@ -28,7 +28,11 @@ class ClamdRemoteDriver extends ClamdDriver
             throw new InvalidTargetException('Remote scan of directory is not supported');
         }
 
-        $this->instreamData(file_get_contents($path));
+        $resource = fopen($path, 'r');
+
+        $this->instreamResource($resource);
+
+        fclose($resource);
 
         $result = $this->getResponse();
 
@@ -90,45 +94,6 @@ class ClamdRemoteDriver extends ClamdDriver
         $result += $this->endStream();
 
         return $result;
-    }
-
-    /**
-     * @param $path
-     * @return array
-     */
-    private function streamData($path)
-    {
-        $port = null;
-        $socket = null;
-        $command = 'STREAM';
-        $result = '';
-
-        $socket = $this->getSocket();
-        $this->sendRequest($socket, $command);
-
-        //socket_send($socket, $command, strlen($command), 0);
-        ////$result = $this->socketRead($socket, 0);
-
-        socket_recv($socket, $result, self::BYTES_READ, 0);
-
-        sscanf($result, 'PORT %d\n', $port);
-
-        $stream = socket_create(AF_INET, SOCK_STREAM, 0);
-        socket_connect($stream, $this->getOption('host', self::HOST), $port);
-
-        // FIXME this is not ok, large file would probably fail ...
-        $buffer = file_get_contents($path);
-        // socket_send($stream, $buffer, strlen($buffer), 0);
-        $this->sendRequest($socket, $buffer);
-        socket_close($stream);
-
-        $result = $this->getResponse();
-
-        if (false != ($filtered = $this->filterScanResult($result))) {
-            $filtered[0] = preg_replace('/^stream:/', $path . ':', $filtered[0]);
-        }
-
-        return $filtered;
     }
 
     /**

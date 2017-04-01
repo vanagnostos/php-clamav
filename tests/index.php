@@ -19,9 +19,11 @@ $clamd = new \Avasil\ClamAv\Scanner([
 info($clamd);
 scan($clamd, ['../tests/clean.txt', '../tests/infected.txt', '../tests/']);
 
+//////////////////////////////////////////////////////////////////////////////
+
 echo '<br />';
 
-// Scan using clamd on localhost
+// Scan using clamd on local host
 // clamd must have access to the scanned files
 
 $clamd->setDriver(
@@ -45,3 +47,21 @@ $clamd->setDriver(
 
 info($clamd);
 scan($clamd, ['../tests/clean.txt', '../tests/infected.txt', '../tests/']);
+
+//////////////////////////////////////////////////////////////////////////////
+
+echo '<br />';
+
+// Scan using clamd on remote host
+// directory scan is not supported
+
+$clamd->setDriver(
+    $clamd->getDriverFactory()->createDriver([
+        'driver' => 'clamd_remote',
+        'host' => '127.0.0.1',
+        'port' => 3310,
+    ])
+);
+
+info($clamd);
+scan($clamd, ['../tests/clean.txt', '../tests/infected.txt']);

@@ -52,6 +52,23 @@ $clamd->setDriver(
 
 info($clamd);
 scan($clamd, ['../tests/clean.txt', '../tests/infected.txt', '../tests/']);
+
+echo '<br />';
+
+// Scan using clamd on remote host - clamd does not have access to files
+// so they have to be streamed over the network    
+// directory scan is not supported
+
+$clamd->setDriver(
+    $clamd->getDriverFactory()->createDriver([
+        'driver' => 'clamd_remote',
+        'host' => '192.168.5.12', 
+        'port' => 3310,
+    ])
+);
+
+info($clamd);
+scan($clamd, ['../tests/clean.txt', '../tests/infected.txt']);
 ```
 
 **This should output something like:**
@@ -76,3 +93,9 @@ scan($clamd, ['../tests/clean.txt', '../tests/infected.txt', '../tests/']);
 > ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
 > ../tests/archive.zip is infected with Eicar-Test-Signature FOUND  
 
+> Ping: Ok  
+> ClamAv Version: ClamAV 0.99.2/21473/Thu Mar 24 20:25:24 2016  
+> Scanning ../tests/clean.txt:  
+> ../tests/clean.txt is clean  
+> Scanning ../tests/infected.txt:  
+> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  

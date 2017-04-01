@@ -48,11 +48,6 @@ class ClamdDriver extends AbstractDriver
     /**
      * @var bool
      */
-    protected $transaction = false;
-
-    /**
-     * @var bool
-     */
     protected $canRead = false;
 
     /**
@@ -222,39 +217,11 @@ class ClamdDriver extends AbstractDriver
             $data .= $chunk;
         }
 
-        if (!$this->inTransaction()) {
-            $this->closeSocket();
-        }
+        $this->closeSocket();
 
         $this->canRead = false;
 
         return $data;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function startTransaction()
-    {
-        $this->transaction = true;
-        return $this;
-    }
-
-    /**
-     * @return void
-     */
-    protected function commitTransaction()
-    {
-        $this->closeSocket();
-        $this->transaction = false;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function inTransaction()
-    {
-        return $this->transaction;
     }
 
     /**
