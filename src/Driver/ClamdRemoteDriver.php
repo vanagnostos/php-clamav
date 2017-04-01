@@ -43,13 +43,20 @@ class ClamdRemoteDriver extends ClamdDriver
         return $filtered;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function scanBuffer($buffer)
     {
         $this->instreamData($buffer);
 
         $result = $this->getResponse();
 
-        return $this->filterScanResult($result);
+        if (false != ($filtered = $this->filterScanResult($result))) {
+            $filtered[0] = preg_replace('/^stream:/', 'buffer:', $filtered[0]);
+        }
+
+        return $filtered;
     }
 
     /**
@@ -59,7 +66,7 @@ class ClamdRemoteDriver extends ClamdDriver
      */
     private function instreamData($data)
     {
-        if (!is_scalar($data)) {
+        if (!is_scalar($data)) { // FIXME
             throw new InvalidTargetException(
                 sprintf('Expected string, received %s', gettype($data))
             );

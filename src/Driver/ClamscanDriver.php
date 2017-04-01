@@ -74,8 +74,7 @@ class ClamscanDriver extends AbstractDriver
      */
     public function scan($path)
     {
-        $real_path = realpath($path);
-        $safe_path = escapeshellarg($real_path);
+        $safe_path = escapeshellarg($path);
 
         // Reset the values.
         $return = -1;

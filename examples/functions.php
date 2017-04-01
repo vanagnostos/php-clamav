@@ -21,7 +21,7 @@ function line($label, $text)
     if ($text) {
         echo escape($text);
     }
-    echo '<br />';
+    echo '  <br />';
 }
 
 /**
@@ -42,16 +42,16 @@ function scan(\Avasil\ClamAv\Scanner $clamd, array $targets, $mode = 'scan')
 {
     array_map(function ($target) use ($clamd, $mode) {
 
-        line('Scanning ' . $target, '');
+        line('Scanning ' . ($mode == 'scan' ? $target : 'buffer'), '');
 
-        $infected = $mode == 'scan' ? $clamd->scan($target) : $clamd->scanBuffer($target);
+        $result = $mode == 'scan' ? $clamd->scan($target) : $clamd->scanBuffer($target);
 
-        if (!$infected) {
-            line('', $target . ' is clean');
+        if ($result->isClean()) {
+            line('', $result->getTarget() . ' is clean');
             return;
         }
 
-        foreach ($infected as $file => $virus) {
+        foreach ($result->getInfected() as $file => $virus) {
             line('', $file . ' is infected with ' . $virus);
         }
     }, $targets);

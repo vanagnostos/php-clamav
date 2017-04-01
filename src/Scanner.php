@@ -62,8 +62,12 @@ class Scanner implements ScannerInterface
             );
         }
 
+        // make sure clamav works with real paths
+        $real_path = realpath($path);
+
         return $this->parseResults(
-            $this->getDriver()->scan($path)
+            $path,
+            $this->getDriver()->scan($real_path)
         );
     }
 
@@ -80,6 +84,7 @@ class Scanner implements ScannerInterface
         }
 
         return $this->parseResults(
+            'buffer',
             $this->getDriver()->scanBuffer($buffer)
         );
     }
@@ -125,16 +130,17 @@ class Scanner implements ScannerInterface
     }
 
     /**
+     * @param $path
      * @param array $infected
-     * @return array
+     * @return ResultInterface
      */
-    protected function parseResults(array $infected)
+    protected function parseResults($path, array $infected)
     {
-        $result = [];
+        $result = new Result($path);
 
         foreach ($infected as $line) {
             list($file, $virus) = explode(':', $line);
-            $result[$file] = $virus;
+            $result->addInfected($file, $virus);
         }
 
         return $result;

@@ -97,15 +97,13 @@ class ClamdDriver extends AbstractDriver
      */
     public function scan($path)
     {
-        $real_path = realpath($path);
-
-        if (is_dir($real_path)) {
+        if (is_dir($path)) {
             $command = 'CONTSCAN';
         } else {
             $command = 'SCAN';
         }
 
-        $this->sendCommand($command . ' ' . $real_path);
+        $this->sendCommand($command . ' ' . $path);
 
         $result = $this->getResponse();
 
