@@ -6,7 +6,7 @@ use Avasil\ClamAv\Driver\DriverFactoryInterface;
 use Avasil\ClamAv\Driver\DriverInterface;
 use Avasil\ClamAv\Exception\InvalidTargetException;
 
-class Scanner
+class Scanner implements ScannerInterface
 {
     /**
      * @var DriverInterface
@@ -35,8 +35,7 @@ class Scanner
     }
 
     /**
-     * ping command is used to see whether Clamd is alive or not
-     * @return bool
+     * @inheritdoc
      */
     public function ping()
     {
@@ -44,8 +43,7 @@ class Scanner
     }
 
     /**
-     * version is used to receive the version of Clamd
-     * @return string
+     * @inheritdoc
      */
     public function version()
     {
@@ -53,29 +51,37 @@ class Scanner
     }
 
     /**
-     * scan is used to scan single file.
-     * @param $file
-     * @return array
+     * @inheritdoc
      * @throws InvalidTargetException
      */
-    public function scan($file)
+    public function scan($path)
     {
-        if (!is_readable($file)) {
+        if (!is_readable($path)) {
             throw new InvalidTargetException(
                 sprintf('%s does not exist or is not readable.')
             );
         }
 
-        $result = [];
+        return $this->parseResults(
+            $this->getDriver()->scan($path)
+        );
+    }
 
-        $infected = $this->getDriver()->scan($file);
-
-        foreach ($infected as $line) {
-            list($file, $virus) = explode(':', $line);
-            $result[$file] = $virus;
+    /**
+     * @inheritdoc
+     * @internal param $path
+     */
+    public function scanBuffer($buffer)
+    {
+        if (!is_scalar($buffer) && (!is_object($buffer) || !method_exists($buffer, '__toString'))) {
+            throw new InvalidTargetException(
+                sprintf('Expected scalar value, received %s', gettype($buffer))
+            );
         }
 
-        return $result;
+        return $this->parseResults(
+            $this->getDriver()->scanBuffer($buffer)
+        );
     }
 
     /**
@@ -116,5 +122,21 @@ class Scanner
     public function setDriverFactory($driverFactory)
     {
         $this->driverFactory = $driverFactory;
+    }
+
+    /**
+     * @param array $infected
+     * @return array
+     */
+    protected function parseResults(array $infected)
+    {
+        $result = [];
+
+        foreach ($infected as $line) {
+            list($file, $virus) = explode(':', $line);
+            $result[$file] = $virus;
+        }
+
+        return $result;
     }
 }

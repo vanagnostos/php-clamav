@@ -3,7 +3,7 @@ namespace Avasil\ClamAv\Exception;
 
 /**
  * Class InvalidTargetException
- * @package Clamd\Exception
+ * @package Avasil\ClamAv\Exception
  */
 class InvalidTargetException extends \Exception
 {

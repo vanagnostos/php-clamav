@@ -3,7 +3,7 @@ namespace Avasil\ClamAv\Exception;
 
 /**
  * Class SocketException
- * @package Clamd\Exception
+ * @package Avasil\ClamAv\Exception
  */
 class SocketException extends \Exception
 {

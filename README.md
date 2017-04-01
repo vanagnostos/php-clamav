@@ -19,12 +19,13 @@ require_once './functions.php';
 $clamd = new \Avasil\ClamAv\Scanner([
     'driver' => 'clamscan',
     // clamscan or clamdscan,
-    // clamdscan much faster but clamd daemon must be running
+    // clamdscan is much faster but clamd daemon must be running
     'executable' => '/usr/local/bin/clamdscan'
 ]);
 
 info($clamd);
-scan($clamd, ['../tests/clean.txt', '../tests/infected.txt', '../tests/']);
+scan($clamd, ['../examples/clean.txt', '../examples/infected.txt', '../examples/']);
+// or just ($clamd->scan('../examples/clean.txt'))
 
 echo '<br />';
 
@@ -51,7 +52,7 @@ $clamd->setDriver(
 //]);
 
 info($clamd);
-scan($clamd, ['../tests/clean.txt', '../tests/infected.txt', '../tests/']);
+scan($clamd, ['../examples/clean.txt', '../examples/infected.txt', '../examples/']);
 
 echo '<br />';
 
@@ -68,34 +69,34 @@ $clamd->setDriver(
 );
 
 info($clamd);
-scan($clamd, ['../tests/clean.txt', '../tests/infected.txt']);
+scan($clamd, ['../examples/clean.txt', '../examples/infected.txt']);
 ```
 
 **This should output something like:**
 
 > Ping: Ok  
 > ClamAv Version: ClamAV 0.99.2/21473/Thu Mar 24 20:25:24 2016  
-> Scanning ../tests/clean.txt:  
-> ../tests/clean.txt is clean  
-> Scanning ../tests/infected.txt:  
-> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
-> Scanning ../tests/:  
-> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
-> ../tests/archive.zip is infected with Eicar-Test-Signature FOUND  
+> Scanning ../examples/clean.txt:  
+> ../examples/clean.txt is clean  
+> Scanning ../examples/infected.txt:  
+> ../examples/infected.txt is infected with Eicar-Test-Signature FOUND  
+> Scanning ../examples/:  
+> ../examples/infected.txt is infected with Eicar-Test-Signature FOUND  
+> ../examples/archive.zip is infected with Eicar-Test-Signature FOUND  
   
 > Ping: Ok  
 > ClamAv Version: ClamAV 0.99.2/21473/Thu Mar 24 20:25:24 2016  
-> Scanning ../tests/clean.txt:  
-> ../tests/clean.txt is clean  
-> Scanning ../tests/infected.txt:  
-> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
-> Scanning ../tests/:  
-> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
-> ../tests/archive.zip is infected with Eicar-Test-Signature FOUND  
+> Scanning ../examples/clean.txt:  
+> ../examples/clean.txt is clean  
+> Scanning ../examples/infected.txt:  
+> ../examples/infected.txt is infected with Eicar-Test-Signature FOUND  
+> Scanning ../examples/:  
+> ../examples/infected.txt is infected with Eicar-Test-Signature FOUND  
+> ../examples/archive.zip is infected with Eicar-Test-Signature FOUND  
 
 > Ping: Ok  
 > ClamAv Version: ClamAV 0.99.2/21473/Thu Mar 24 20:25:24 2016  
-> Scanning ../tests/clean.txt:  
-> ../tests/clean.txt is clean  
-> Scanning ../tests/infected.txt:  
-> ../tests/infected.txt is infected with Eicar-Test-Signature FOUND  
+> Scanning ../examples/clean.txt:  
+> ../examples/clean.txt is clean  
+> Scanning ../examples/infected.txt:  
+> ../examples/infected.txt is infected with Eicar-Test-Signature FOUND  

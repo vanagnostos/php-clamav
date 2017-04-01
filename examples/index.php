@@ -17,7 +17,7 @@ $clamd = new \Avasil\ClamAv\Scanner([
 ]);
 
 info($clamd);
-scan($clamd, ['../tests/clean.txt', '../tests/infected.txt', '../tests/']);
+scan($clamd, ['../examples/clean.txt', '../examples/infected.txt', '../examples/']);
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +46,7 @@ $clamd->setDriver(
 //]);
 
 info($clamd);
-scan($clamd, ['../tests/clean.txt', '../tests/infected.txt', '../tests/']);
+scan($clamd, ['../examples/clean.txt', '../examples/infected.txt', '../examples/']);
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -64,4 +64,12 @@ $clamd->setDriver(
 );
 
 info($clamd);
-scan($clamd, ['../tests/clean.txt', '../tests/infected.txt']);
+scan($clamd, ['../examples/clean.txt', '../examples/infected.txt']);
+scan(
+    $clamd,
+    [
+        'Lorem Ipsum Dolor',
+        'Lorem Ipsum Dolor X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
+    ],
+    'buffer'
+);

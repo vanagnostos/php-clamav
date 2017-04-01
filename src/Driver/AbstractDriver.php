@@ -24,4 +24,12 @@ abstract class AbstractDriver implements DriverInterface
     {
         $this->options = $options;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function scanBuffer($buffer)
+    {
+        // TODO
+    }
 }

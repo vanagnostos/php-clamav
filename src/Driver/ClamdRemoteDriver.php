@@ -43,6 +43,15 @@ class ClamdRemoteDriver extends ClamdDriver
         return $filtered;
     }
 
+    public function scanBuffer($buffer)
+    {
+        $this->instreamData($buffer);
+
+        $result = $this->getResponse();
+
+        return $this->filterScanResult($result);
+    }
+
     /**
      * @param string $data
      * @return false|int

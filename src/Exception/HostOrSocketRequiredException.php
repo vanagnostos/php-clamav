@@ -3,7 +3,7 @@ namespace Avasil\ClamAv\Exception;
 
 /**
  * Class HostOrSocketRequiredException
- * @package Clamd\Exception
+ * @package Avasil\ClamAv\Exception
  */
 class HostOrSocketRequiredException extends \Exception
 {
