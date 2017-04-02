@@ -1,8 +1,6 @@
 <?php
 namespace Avasil\ClamAv\Socket;
 
-use Avasil\ClamAv\Exception\SocketException;
-
 /**
  * Interface SocketInterface
  * @package Avasil\ClamAv\Socket

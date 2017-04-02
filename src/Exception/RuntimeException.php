@@ -2,9 +2,9 @@
 namespace Avasil\ClamAv\Exception;
 
 /**
- * Class InvalidTargetException
+ * Class RuntimeException
  * @package Avasil\ClamAv\Exception
  */
-class InvalidTargetException extends \Exception
+class RuntimeException extends \RuntimeException
 {
 }

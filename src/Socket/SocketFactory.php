@@ -1,7 +1,7 @@
 <?php
 namespace Avasil\ClamAv\Socket;
 
-use Avasil\ClamAv\Exception\HostOrSocketRequiredException;
+use Avasil\ClamAv\Exception\ConfigurationException;
 
 /**
  * Class SocketFactory
@@ -13,12 +13,12 @@ class SocketFactory
      * Create socket
      * @param $options
      * @return SocketInterface
-     * @throws HostOrSocketRequiredException
+     * @throws ConfigurationException
      */
     public static function create($options)
     {
         if (empty($options['socket']) && empty($options['host'])) {
-            throw new HostOrSocketRequiredException(
+            throw new ConfigurationException(
                 'Socket requires host IP address or socket path, please check your config.'
             );
         }
@@ -29,7 +29,7 @@ class SocketFactory
             $instance->setPort($options['port']);
         } else {
             if (!is_readable($options['socket'])) {
-                throw new HostOrSocketRequiredException(
+                throw new ConfigurationException(
                     sprintf('Socket "%s" does not exist or is not readable.', $options['socket'])
                 );
             }

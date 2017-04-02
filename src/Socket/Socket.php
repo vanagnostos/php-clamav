@@ -1,6 +1,7 @@
 <?php
 namespace Avasil\ClamAv\Socket;
 
+use Avasil\ClamAv\Exception\RuntimeException;
 use Avasil\ClamAv\Exception\SocketException;
 
 /**
@@ -128,12 +129,13 @@ class Socket implements SocketInterface
     /**
      * @param int $flags
      * @return string|false
+     * @throws RuntimeException
      */
     public function receive($flags = MSG_WAITALL)
     {
         // $this->reconnect();
         if (!is_resource($this->socket)) {
-            throw new \RuntimeException('Socket is currently closed');
+            throw new RuntimeException('Socket is currently closed');
         }
 
         $data = '';

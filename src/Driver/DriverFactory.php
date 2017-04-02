@@ -1,7 +1,7 @@
 <?php
 namespace Avasil\ClamAv\Driver;
 
-use Avasil\ClamAv\Exception\MissingDriverException;
+use Avasil\ClamAv\Exception\ConfigurationException;
 
 /**
  * Class DriverFactory
@@ -22,15 +22,16 @@ class DriverFactory
 
     /**
      * @inheritdoc
+     * @throws ConfigurationException
      */
     public static function create(array $config)
     {
         if (empty($config['driver'])) {
-            throw new MissingDriverException('ClamAV driver required, please check your config.');
+            throw new ConfigurationException('ClamAV driver required, please check your config.');
         }
 
         if (!array_key_exists($config['driver'], static::DRIVERS)) {
-            throw new MissingDriverException(
+            throw new ConfigurationException(
                 sprintf(
                     'Invalid driver "%s" specified. Available options are: %s',
                     $config['driver'],

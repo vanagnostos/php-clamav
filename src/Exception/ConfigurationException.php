@@ -2,9 +2,9 @@
 namespace Avasil\ClamAv\Exception;
 
 /**
- * Class MissingExecutableException
+ * Class ConfigException
  * @package Avasil\ClamAv\Exception
  */
-class MissingExecutableException extends \Exception
+class ConfigurationException extends \InvalidArgumentException
 {
 }

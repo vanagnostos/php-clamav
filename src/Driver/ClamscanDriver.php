@@ -1,8 +1,8 @@
 <?php
 namespace Avasil\ClamAv\Driver;
 
-use Avasil\ClamAv\Exception\InvalidTargetException;
-use Avasil\ClamAv\Exception\MissingExecutableException;
+use Avasil\ClamAv\Exception\RuntimeException;
+use Avasil\ClamAv\Exception\ConfigurationException;
 
 /**
  * Class ClamscanDriver
@@ -33,14 +33,14 @@ class ClamscanDriver extends AbstractDriver
     /**
      * ClamscanDriver constructor.
      * @param array $options
-     * @throws MissingExecutableException
+     * @throws ConfigurationException
      */
     public function __construct($options = array())
     {
         parent::__construct($options);
 
         if (!is_executable($this->getExecutable())) {
-            throw new MissingExecutableException(
+            throw new ConfigurationException(
                 $this->getExecutable() ?
                     sprintf('%s is not valid executable file', $this->getExecutable()) :
                     'Executable required, please check your config.'
@@ -70,7 +70,7 @@ class ClamscanDriver extends AbstractDriver
 
     /**
      * @inheritdoc
-     * @throws InvalidTargetException
+     * @throws RuntimeException
      */
     public function scan($path)
     {
@@ -89,7 +89,7 @@ class ClamscanDriver extends AbstractDriver
 
     /**
      * @inheritdoc
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function scanBuffer($buffer)
     {
@@ -103,8 +103,7 @@ class ClamscanDriver extends AbstractDriver
         $process = @ proc_open($cmd, $descriptorSpec, $pipes);
 
         if (!is_resource($process)) {
-            // FIXME exc
-            throw new \RuntimeException('Failed to open a process file pointer');
+            throw new RuntimeException('Failed to open a process file pointer');
         }
 
         // write data to stdin
@@ -118,7 +117,11 @@ class ClamscanDriver extends AbstractDriver
         // get return value and close
         $return = proc_close($process);
 
-        return $this->parseResults($return, explode("\n", $out));
+        if (false != ($parsed = $this->parseResults($return, explode("\n", $out)))) {
+            $parsed[0] = preg_replace('/^stream:/', 'buffer:', $parsed[0]);
+        }
+
+        return $parsed;
     }
 
     /**

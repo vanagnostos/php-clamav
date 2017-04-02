@@ -1,6 +1,7 @@
 <?php
 namespace Avasil\ClamAv\Driver;
 
+use Avasil\ClamAv\Exception\RuntimeException;
 use Avasil\ClamAv\Socket\Socket;
 use Avasil\ClamAv\Socket\SocketFactory;
 use Avasil\ClamAv\Socket\SocketInterface;
@@ -141,11 +142,12 @@ class ClamdDriver extends AbstractDriver
      * @param $data
      * @param int $flags
      * @return false|int
+     * @throws RuntimeException
      */
     protected function sendRequest($data, $flags = 0)
     {
         if (false == ($bytes = $this->getSocket()->send($data, $flags))) {
-            throw new \RuntimeException('Cannot write to socked'); // FIXME
+            throw new RuntimeException('Cannot write to socket');
         }
         return $bytes;
     }

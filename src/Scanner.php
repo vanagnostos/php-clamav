@@ -3,7 +3,7 @@ namespace Avasil\ClamAv;
 
 use Avasil\ClamAv\Driver\DriverFactory;
 use Avasil\ClamAv\Driver\DriverInterface;
-use Avasil\ClamAv\Exception\InvalidTargetException;
+use Avasil\ClamAv\Exception\RuntimeException;
 
 class Scanner implements ScannerInterface
 {
@@ -46,13 +46,13 @@ class Scanner implements ScannerInterface
 
     /**
      * @inheritdoc
-     * @throws InvalidTargetException
+     * @throws RuntimeException
      */
     public function scan($path)
     {
         if (!is_readable($path)) {
-            throw new InvalidTargetException(
-                sprintf('%s does not exist or is not readable.')
+            throw new RuntimeException(
+                sprintf('"%s" does not exist or is not readable.')
             );
         }
 
@@ -67,12 +67,12 @@ class Scanner implements ScannerInterface
 
     /**
      * @inheritdoc
-     * @internal param $path
+     * @throws RuntimeException
      */
     public function scanBuffer($buffer)
     {
         if (!is_scalar($buffer) && (!is_object($buffer) || !method_exists($buffer, '__toString'))) {
-            throw new InvalidTargetException(
+            throw new RuntimeException(
                 sprintf('Expected scalar value, received %s', gettype($buffer))
             );
         }

@@ -1,7 +1,7 @@
 <?php
 namespace Avasil\ClamAv\Driver;
 
-use Avasil\ClamAv\Exception\InvalidTargetException;
+use Avasil\ClamAv\Exception\RuntimeException;
 
 /**
  * Class ClamdRemoteDriver
@@ -26,11 +26,12 @@ class ClamdRemoteDriver extends ClamdDriver
 
     /**
      * @inheritdoc
+     * @throws RuntimeException
      */
     public function scan($path)
     {
         if (!is_file($path)) {
-            throw new InvalidTargetException('Remote scan of directory is not supported');
+            throw new RuntimeException('Remote scan of directory is not supported');
         }
 
         $this->sendCommand('INSTREAM');
