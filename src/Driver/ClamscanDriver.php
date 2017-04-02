@@ -78,13 +78,89 @@ class ClamscanDriver extends AbstractDriver
 
         // Reset the values.
         $return = -1;
-        $result = [];
 
         $cmd = $this->getExecutable() . ' ' . sprintf($this->getCommand(), $safe_path);
 
         // Execute the command.
         exec($cmd, $out, $return);
 
+        return $this->parseResults($return, $out);
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \RuntimeException
+     */
+    public function scanBuffer($buffer)
+    {
+        $descriptorSpec = array(
+            0 => array("pipe", "r"),  // stdin is a pipe that clamscan will read from
+            1 => array("pipe", "w"),  // stdout is a pipe that clamscan will write to
+        );
+
+        $cmd = $this->getExecutable() . ' ' . sprintf($this->getCommand(), '-');
+
+        $process = @ proc_open($cmd, $descriptorSpec, $pipes);
+
+        if (!is_resource($process)) {
+            // FIXME exc
+            throw new \RuntimeException('Failed to open a process file pointer');
+        }
+
+        // write data to stdin
+        fwrite($pipes[0], $buffer);
+        fclose($pipes[0]);
+
+        // get response
+        $out = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+
+        // get return value and close
+        $return = proc_close($process);
+
+        return $this->parseResults($return, explode("\n", $out));
+    }
+
+    /**
+     * @return string
+     */
+    protected function getExecutable()
+    {
+        return $this->getOption('executable', static::EXECUTABLE);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCommand()
+    {
+        return $this->getOption('command', static::COMMAND);
+    }
+
+    /**
+     * @return int
+     */
+    protected function getInfected()
+    {
+        return $this->getOption('infected', static::INFECTED);
+    }
+
+    /**
+     * @return int
+     */
+    protected function getClean()
+    {
+        return $this->getOption('clean', static::CLEAN);
+    }
+
+    /**
+     * @param int $return
+     * @param array $out
+     * @return array
+     */
+    private function parseResults($return, array $out)
+    {
+        $result = [];
         if ($return == $this->getInfected()) {
             foreach ($out as $infected) {
                 if (empty($infected)) {
@@ -95,37 +171,5 @@ class ClamscanDriver extends AbstractDriver
         }
 
         return $result;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getExecutable()
-    {
-        return $this->getOption('executable', self::EXECUTABLE);
-    }
-
-    /**
-     * @return string
-     */
-    protected function getCommand()
-    {
-        return $this->getOption('command', self::COMMAND);
-    }
-
-    /**
-     * @return int
-     */
-    protected function getInfected()
-    {
-        return $this->getOption('infected', self::INFECTED);
-    }
-
-    /**
-     * @return int
-     */
-    protected function getClean()
-    {
-        return $this->getOption('clean', self::CLEAN);
     }
 }

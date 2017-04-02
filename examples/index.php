@@ -5,73 +5,45 @@ ini_set('display_errors', true);
 // autoloader
 require '../vendor/autoload.php';
 
-// helper functions used in this example
-require_once './functions.php';
+// Scan using clamscan or clamdscan available on localhost, clamscan must have access to the scanned files.
+// clamscan and clamdscan are supported, clamdscan much faster but clamd daemon must be running.
+$config = ['driver' => 'clamscan', 'executable' => '/usr/local/bin/clamdscan'];
 
-// Scan using clamscan or clamdscan available on localhost
-// clamscan must have access to the scanned files
+// Scan using clamd on local host, clamd must have access to the scanned files.
+// $config = ['driver' => 'clamd_local', 'socket' => '/usr/local/var/run/clamav/clamd.sock'];
+// $config = ['driver' => 'clamd_local', 'host' => '127.0.0.1', 'port' => 3310];
 
-$clamd = new \Avasil\ClamAv\Scanner([
-    'driver' => 'clamscan',
-    // clamscan or clamdscan,
-    // clamdscan much faster but clamd daemon must be running
-    'executable' => '/usr/local/bin/clamdscan'
-]);
+// Scan using clamd on remote host, directory scan is not supported.
+// Files will be send over the network so large files could be an issue.
+// $config = ['driver' => 'clamd_remote', 'host' => '127.0.0.1', 'port' => 3310];
 
-info($clamd);
-scan($clamd, ['../examples/clean.txt', '../examples/infected.txt', '../examples/']);
+$clamd = new \Avasil\ClamAv\Scanner($config);
 
-//////////////////////////////////////////////////////////////////////////////
+echo 'Ping: ', ($clamd->ping() ? 'Ok' : 'Failed'), '<br />';
 
-echo '<br />';
+echo 'ClamAv Version: ', $clamd->version(), '<br />';
 
-// Scan using clamd on local host
-// clamd must have access to the scanned files
+$toScan = [
+    '../examples/files/clean.txt',
+    '../examples/files/infected.txt',
+    '../examples/files/',
+    'Lorem Ipsum Dolor',
+    'Lorem Ipsum Dolor X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
+];
 
-$clamd->setDriver(
-    $clamd->getDriverFactory()->createDriver([
-        'driver' => 'clamd_local',
-        'socket' => '/usr/local/var/run/clamav/clamd.sock',
-        // or
-        // 'host' => '127.0.0.1',
-        // 'port' => 3310,
-    ])
-);
-
-// Or create new one
-//$clamd = new \Avasil\ClamAv\Scanner([
-//    'driver' => 'clamd_local',
-//    //'socket' => '/usr/local/var/run/clamav/clamd.sock'
-//    // or
-//    'host' => '127.0.0.1',
-//    'port' => 3310,
-//]);
-
-info($clamd);
-scan($clamd, ['../examples/clean.txt', '../examples/infected.txt', '../examples/']);
-
-//////////////////////////////////////////////////////////////////////////////
-
-echo '<br />';
-
-// Scan using clamd on remote host
-// directory scan is not supported
-
-$clamd->setDriver(
-    $clamd->getDriverFactory()->createDriver([
-        'driver' => 'clamd_remote',
-        'host' => '127.0.0.1',
-        'port' => 3310,
-    ])
-);
-
-info($clamd);
-scan($clamd, ['../examples/clean.txt', '../examples/infected.txt']);
-scan(
-    $clamd,
-    [
-        'Lorem Ipsum Dolor',
-        'Lorem Ipsum Dolor X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
-    ],
-    'buffer'
-);
+foreach ($toScan as $f) {
+    if (file_exists($f)) {
+        echo 'Scanning ', $f, '<br />';
+        $result = $clamd->scan($f);
+    } else {
+        echo 'Scanning buffer', '<br />';
+        $result = $clamd->scanBuffer($f);
+    }
+    if ($result->isClean()) {
+        echo ' - ', $result->getTarget(), ' is clean', '<br />';
+    } else {
+        foreach ($result->getInfected() as $file => $virus) {
+            echo ' - ', $file, ' is infected with ', $virus, '<br />';
+        }
+    }
+}

@@ -7,7 +7,7 @@ use Avasil\ClamAv\Exception\MissingDriverException;
  * Class DriverFactory
  * @package Avasil\ClamAv\Driver
  */
-class DriverFactory implements DriverFactoryInterface
+class DriverFactory
 {
     /**
      * Available drivers
@@ -23,7 +23,7 @@ class DriverFactory implements DriverFactoryInterface
     /**
      * @inheritdoc
      */
-    public function createDriver(array $config)
+    public static function create(array $config)
     {
         if (empty($config['driver'])) {
             throw new MissingDriverException('ClamAV driver required, please check your config.');
@@ -38,8 +38,6 @@ class DriverFactory implements DriverFactoryInterface
                 )
             );
         }
-
-        // TODO validate config, more options...
 
         $driver = static::DRIVERS[$config['driver']];
         return new $driver($config);

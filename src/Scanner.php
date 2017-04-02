@@ -2,7 +2,6 @@
 namespace Avasil\ClamAv;
 
 use Avasil\ClamAv\Driver\DriverFactory;
-use Avasil\ClamAv\Driver\DriverFactoryInterface;
 use Avasil\ClamAv\Driver\DriverInterface;
 use Avasil\ClamAv\Exception\InvalidTargetException;
 
@@ -12,11 +11,6 @@ class Scanner implements ScannerInterface
      * @var DriverInterface
      */
     protected $driver;
-
-    /**
-     * @var DriverFactoryInterface
-     */
-    protected $driverFactory;
 
     /**
      * @var array
@@ -95,9 +89,7 @@ class Scanner implements ScannerInterface
     public function getDriver()
     {
         if (!$this->driver) {
-            $this->driver = $this->getDriverFactory()->createDriver(
-                $this->options
-            );
+            $this->driver = DriverFactory::create($this->options);
         }
         return $this->driver;
     }
@@ -111,25 +103,6 @@ class Scanner implements ScannerInterface
     }
 
     /**
-     * @return DriverFactoryInterface
-     */
-    public function getDriverFactory()
-    {
-        if (!$this->driverFactory) {
-            $this->driverFactory = new DriverFactory();
-        }
-        return $this->driverFactory;
-    }
-
-    /**
-     * @param DriverFactoryInterface $driverFactory
-     */
-    public function setDriverFactory($driverFactory)
-    {
-        $this->driverFactory = $driverFactory;
-    }
-
-    /**
      * @param $path
      * @param array $infected
      * @return ResultInterface
@@ -140,7 +113,7 @@ class Scanner implements ScannerInterface
 
         foreach ($infected as $line) {
             list($file, $virus) = explode(':', $line);
-            $result->addInfected($file, $virus);
+            $result->addInfected($file, preg_replace('/ FOUND$/', '', $virus));
         }
 
         return $result;

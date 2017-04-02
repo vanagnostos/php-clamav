@@ -18,7 +18,6 @@ interface ScannerInterface
      * scanBuffer is used to scan in-memory data
      * @param $buffer
      * @return array
-     * @internal param $path
      */
     public function scanBuffer($buffer);
 

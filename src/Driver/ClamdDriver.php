@@ -1,8 +1,9 @@
 <?php
 namespace Avasil\ClamAv\Driver;
 
-use Avasil\ClamAv\Exception\HostOrSocketRequiredException;
-use Avasil\ClamAv\Exception\SocketException;
+use Avasil\ClamAv\Socket\Socket;
+use Avasil\ClamAv\Socket\SocketFactory;
+use Avasil\ClamAv\Socket\SocketInterface;
 
 /**
  * Class ClamdDriver
@@ -10,16 +11,6 @@ use Avasil\ClamAv\Exception\SocketException;
  */
 class ClamdDriver extends AbstractDriver
 {
-    /**
-     * @var int
-     */
-    const BYTES_READ = 8192;
-
-    /**
-     * @var int
-     */
-    const BYTES_WRITE = 8192;
-
     /**
      * @var string
      */
@@ -41,36 +32,9 @@ class ClamdDriver extends AbstractDriver
     const COMMAND = "n%s\n";
 
     /**
-     * @var resource
+     * @var Socket
      */
-    protected $socket;
-
-    /**
-     * @var bool
-     */
-    protected $canRead = false;
-
-    /**
-     * ClamscanDriver constructor.
-     * @param array $options
-     * @throws HostOrSocketRequiredException
-     */
-    public function __construct($options = array())
-    {
-        parent::__construct($options);
-
-        if (!$this->getOption('socket') && !$this->getOption('host')) {
-            throw new HostOrSocketRequiredException(
-                'Clamd driver requires host IP address or socket path, please check your config.'
-            );
-        }
-
-        if ($this->getOption('socket') && !is_readable($this->getOption('socket'))) {
-            throw new HostOrSocketRequiredException(
-                '%s is not readable.'
-            );
-        }
-    }
+    private $socket;
 
     /**
      * ping command is used to see whether Clamd is alive or not
@@ -111,81 +75,66 @@ class ClamdDriver extends AbstractDriver
     }
 
     /**
+     * @inheritdoc
+     */
+    public function scanBuffer($buffer)
+    {
+        $this->sendCommand('INSTREAM');
+
+        $this->getSocket()->streamData($buffer);
+
+        $result = $this->getResponse();
+
+        if (false != ($filtered = $this->filterScanResult($result))) {
+            $filtered[0] = preg_replace('/^stream:/', 'buffer:', $filtered[0]);
+        }
+
+        return $filtered;
+    }
+
+    /**
      * @param string $command
      * @return int|false
      */
     protected function sendCommand($command)
     {
-        return $this->sendRequest(sprintf(self::COMMAND, $command));
+        return $this->sendRequest(sprintf(static::COMMAND, $command));
     }
 
     /**
-     * @return resource
+     * @param SocketInterface $socket
+     */
+    public function setSocket(SocketInterface $socket)
+    {
+        $this->socket = $socket;
+    }
+
+    /**
+     * @return SocketInterface
      */
     protected function getSocket()
     {
-        return $this->socket ?: $this->createSocket();
-    }
+        if (!$this->socket) {
+            if ($this->getOption('socket')) { // socket set in config
+                $options = [
+                    'socket' => $this->getOption('socket')
+                ];
+            } elseif ($this->getOption('host')) { // host set in config
+                $options = [
+                    'host' => $this->getOption('host'),
+                    'port' => $this->getOption('port', static::PORT)
+                ];
+            } else { // use defaults
+                $options = [
+                    'socket' => $this->getOption('socket', static::SOCKET_PATH),
+                    'host' => $this->getOption('host', static::HOST),
+                    'port' => $this->getOption('port', static::PORT)
+                ];
+            }
+            $this->socket = SocketFactory::create($options);
+        }
 
-    /**
-     * @return void
-     */
-    protected function closeSocket()
-    {
-        if (is_resource($this->socket)) {
-            socket_close($this->socket);
-            $this->socket = null;
-        }
-    }
-
-    /**
-     * @return resource
-     */
-    protected function createSocket()
-    {
-        return $this->socket = $this->getOption('socket') ?
-            $this->getUnixSocket() :
-            $this->getInetSocket();
-    }
-
-    /**
-     * @return resource
-     * @throws SocketException
-     */
-    protected function getInetSocket()
-    {
-        $socket = @socket_create(AF_INET, SOCK_STREAM, 0);
-        if ($socket === false) {
-            throw new SocketException('', socket_last_error());
-        }
-        $hasError = @ socket_connect(
-            $socket,
-            $this->getOption('host', self::HOST),
-            $this->getOption('port', self::PORT)
-        );
-        if ($hasError === false) {
-            throw new SocketException('', socket_last_error());
-        }
-        return $socket;
-    }
-
-    /**
-     * @return resource
-     * @throws SocketException
-     */
-    protected function getUnixSocket()
-    {
-        $socket = @ socket_create(AF_UNIX, SOCK_STREAM, 0);
-        if ($socket === false) {
-            throw new SocketException('', socket_last_error());
-        }
-        $hasError = @ socket_connect($socket, $this->getOption('socket', self::SOCKET_PATH));
-        if ($hasError === false) {
-            $errorCode = socket_last_error();
-            $errorMessage = socket_strerror($errorCode);
-            throw new SocketException($errorMessage, $errorCode);
-        }
-        return $socket;
+        return $this->socket;
     }
 
     /**
@@ -195,9 +144,8 @@ class ClamdDriver extends AbstractDriver
      */
     protected function sendRequest($data, $flags = 0)
     {
-        $socket = $this->getSocket();
-        if (false != ($bytes = socket_send($socket, $data, strlen($data), $flags))) {
-            $this->canRead = true;
+        if (false == ($bytes = $this->getSocket()->send($data, $flags))) {
+            throw new \RuntimeException('Cannot write to socked'); // FIXME
         }
         return $bytes;
     }
@@ -208,17 +156,8 @@ class ClamdDriver extends AbstractDriver
      */
     protected function getResponse($flags = MSG_WAITALL)
     {
-        $socket = $this->getSocket();
-
-        $data = '';
-        while ($bytes = socket_recv($socket, $chunk, self::BYTES_READ, $flags)) {
-            $data .= $chunk;
-        }
-
-        $this->closeSocket();
-
-        $this->canRead = false;
-
+        $data = $this->getSocket()->receive($flags);
+        $this->getSocket()->close();
         return $data;
     }
 
